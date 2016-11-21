@@ -51,6 +51,10 @@ public class SubscriptionNotification {
         return processed;
     }
 
+    public void setProcessed(Boolean processed) {
+        this.processed = processed;
+    }
+
     @Override
     public String toString() {
         return "SubscriptionNotification{" +

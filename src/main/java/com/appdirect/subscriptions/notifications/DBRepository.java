@@ -19,5 +19,9 @@ import java.util.List;
 public interface DBRepository extends JpaRepository<SubscriptionNotification, Long> {
 
     @Query("FROM SubscriptionNotification s where s.type = :type")
-    Collection<SubscriptionNotification> findBySubscriptionNotificationType(@Param("type") NotificationType type);
+    Collection<SubscriptionNotification> findByType(@Param("type") NotificationType type);
+
+    @Query("FROM SubscriptionNotification s where s.type = :type and s.processed = :status")
+    Collection<SubscriptionNotification> findByTypeAndStatus(@Param("type") NotificationType type,
+                                                             @Param("status") Boolean status);
 }
