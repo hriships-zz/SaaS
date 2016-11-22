@@ -1,5 +1,6 @@
 package com.appdirect.subscriptions.operations.services;
 
+import com.appdirect.common.exceptions.AuthException;
 import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.operations.domain.entities.Account;
 import com.appdirect.subscriptions.operations.domain.entities.AccountStatusEnum;
@@ -25,6 +26,7 @@ public class SubscriptionService {
 
     private static final Logger log = LoggerFactory.getLogger(SubscriptionService.class);
 
+
     @Autowired
     private OAuthHelper oAuthHelper;
 
@@ -45,9 +47,13 @@ public class SubscriptionService {
         } catch (OAuthCommunicationException |
                  OAuthExpectationFailedException |
                  OAuthMessageSignerException e) {
-            throw new ServiceException(e);
+            throw new AuthException(e);
         } catch (RestClientException e) {
-            throw new ServiceException(e);
+            if(e.getMessage().equalsIgnoreCase(AuthException.UNAUTHORIZED)) {
+                throw new AuthException(e);
+            } else {
+                throw new ServiceException(e);
+            }
         }
     }
 

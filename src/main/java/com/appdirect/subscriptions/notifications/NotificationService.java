@@ -1,9 +1,11 @@
 package com.appdirect.subscriptions.notifications;
 
+import com.appdirect.common.exceptions.AuthException;
 import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
 import com.appdirect.subscriptions.notifications.domain.ServiceResponse;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
+import com.appdirect.subscriptions.operations.domain.entities.ErrorStatusEnum;
 import com.appdirect.subscriptions.operations.domain.entities.Subscription;
 import com.appdirect.subscriptions.operations.exceptions.ServiceException;
 import com.appdirect.subscriptions.operations.processors.CreateSubscriptionProcessor;
@@ -49,13 +51,13 @@ public class NotificationService {
 
     public boolean notifiySubscription(String url,
                                        String accountId,
-                                       String errorCode) {
+                                       ErrorStatusEnum errorCode) {
         ServiceResponse serviceResponse;
 
         if(errorCode == null) {
             serviceResponse = new ServiceResponse(true, null, null, accountId);
         } else {
-            serviceResponse = new ServiceResponse(false, errorCode, null);
+            serviceResponse = new ServiceResponse(false, errorCode.toString(), null);
         }
 
         try {
@@ -64,9 +66,13 @@ public class NotificationService {
         } catch (OAuthCommunicationException |
                 OAuthExpectationFailedException |
                 OAuthMessageSignerException e) {
-            throw new ServiceException(e);
+            throw new AuthException(e);
         } catch (RestClientException e) {
-            throw new ServiceException(e);
+            if(e.getMessage().equalsIgnoreCase(AuthException.UNAUTHORIZED)) {
+                throw new AuthException(e);
+            } else {
+                throw new ServiceException(e);
+            }
         }
 
         return true;

@@ -1,7 +1,9 @@
 package com.appdirect.subscriptions.operations.processors;
 
+import com.appdirect.common.exceptions.AuthException;
 import com.appdirect.subscriptions.notifications.NotificationService;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
+import com.appdirect.subscriptions.operations.domain.entities.ErrorStatusEnum;
 import com.appdirect.subscriptions.operations.domain.entities.Subscription;
 import com.appdirect.subscriptions.operations.exceptions.ServiceException;
 import com.appdirect.subscriptions.operations.services.SubscriptionService;
@@ -41,8 +43,10 @@ public class CreateSubscriptionWorker implements Runnable {
             log.error("Create subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
             eventNotification.setProcessed(false);
             notificationService.update(eventNotification);
+        } catch (AuthException e) {
+            log.error("Authentication exception occurred: " + e.getMessage(), e);
         } catch (DataIntegrityViolationException e) {
-            notificationService.notifiySubscription(url + "/result", null, "USER_ALREADY_EXISTS");
+            notificationService.notifiySubscription(url + "/result", null, ErrorStatusEnum.USER_ALREADY_EXISTS);
         }
     }
 }
