@@ -40,7 +40,7 @@ public class SubscriptionService {
     public Subscription getByEventUrl(String url) throws ServiceException {
         try {
             String signedURL = oAuthHelper.signURL(url);
-            log.debug("Signed URL : " +  signedURL);
+            log.info("Signed URL : " +  signedURL);
             return restTemplate.getForObject(signedURL, Subscription.class);
         } catch (OAuthCommunicationException |
                  OAuthExpectationFailedException |
