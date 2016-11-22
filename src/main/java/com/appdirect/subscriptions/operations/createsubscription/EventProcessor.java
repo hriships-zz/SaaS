@@ -28,25 +28,37 @@ public class EventProcessor {
 
     @Scheduled(fixedRate = 10000)
     public void processEvents() {
-        int noOfProcess = Runtime.getRuntime().availableProcessors();
-        ExecutorService eventService = Executors.newFixedThreadPool(noOfProcess);
+        ExecutorService eventService = getExecutorService();
+        List<SubscriptionNotification> notifications = getSubscriptionNotifications();
+        processSubscriptions(eventService, notifications);
+        waitFortermintation(eventService);
+    }
 
-        List<SubscriptionNotification> notifications = (List<SubscriptionNotification>)
-                notificationRepo.findByTypeAndStatus(NotificationType.CREATE, false);
-
-        notifications.forEach(n -> {
-            log.debug("Subscription Event Id : " + n.getId());
-            n.setProcessed(true);
-            notificationRepo.save(n);
-            eventService.submit(new EventWorker(n, notificationRepo));
-        });
-
+    private void waitFortermintation(ExecutorService eventService) {
         eventService.shutdown();
         try {
             eventService.awaitTermination(5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             log.error("Create event processor await : " + e.getMessage());
         }
+    }
 
+    private void processSubscriptions(ExecutorService eventService, List<SubscriptionNotification> notifications) {
+        notifications.forEach(n -> {
+            log.debug("Subscription Event Id : " + n.getId());
+            n.setProcessed(true);
+            notificationRepo.save(n);
+            eventService.submit(new EventWorker(n, notificationRepo));
+        });
+    }
+
+    private List<SubscriptionNotification> getSubscriptionNotifications() {
+        return (List<SubscriptionNotification>)
+                    notificationRepo.findByTypeAndStatus(NotificationType.CREATE, false);
+    }
+
+    private ExecutorService getExecutorService() {
+        int noOfProcess = Runtime.getRuntime().availableProcessors();
+        return Executors.newFixedThreadPool(noOfProcess);
     }
 }
