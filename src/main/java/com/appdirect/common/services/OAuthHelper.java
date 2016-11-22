@@ -22,7 +22,7 @@ public class OAuthHelper {
     private String oAuthSecrete;
 
     public String signURL(String url) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
-        OAuthConsumer consumer = new DefaultOAuthConsumer("cloudtest-141946", "hUFnL5Cnz4jbexwB");
+        OAuthConsumer consumer = new DefaultOAuthConsumer(oAuthKey, oAuthSecrete);
         consumer.setSigningStrategy( new QueryStringSigningStrategy());
         String signedUrl = consumer.sign(url);
         return signedUrl;
