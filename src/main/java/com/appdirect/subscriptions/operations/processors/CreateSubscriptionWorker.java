@@ -31,13 +31,14 @@ public class CreateSubscriptionWorker implements Runnable {
     public void run() {
         String url = eventNotification.getUrl();
         log.info("Event ID :" + eventNotification.getId() + " URL " + url);
+
         try {
             Subscription subscription = subscriptionService.getByEventUrl(url);
             subscriptionService.create(subscription);
             String accountIdentifier = subscription.getPayload().getAccount().getAccountIdentifier();
             notificationService.notifiySubscription(url + "/result", accountIdentifier, null);
         } catch (ServiceException e) {
-            log.error("Create subscription exception occurred, retrying create subscription : " + e.getMessage());
+            log.error("Create subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
             eventNotification.setProcessed(false);
             notificationService.update(eventNotification);
         } catch (DataIntegrityViolationException e) {

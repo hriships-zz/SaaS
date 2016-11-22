@@ -5,9 +5,12 @@ import com.appdirect.subscriptions.operations.domain.entities.Account;
 import com.appdirect.subscriptions.operations.domain.entities.AccountStatusEnum;
 import com.appdirect.subscriptions.operations.domain.entities.Subscription;
 import com.appdirect.subscriptions.operations.exceptions.ServiceException;
+import com.appdirect.subscriptions.operations.processors.CreateSubscriptionWorker;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,8 @@ import org.springframework.web.client.RestTemplate;
  */
 @Service
 public class SubscriptionService {
+
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionService.class);
 
     @Autowired
     private OAuthHelper oAuthHelper;
@@ -35,6 +40,7 @@ public class SubscriptionService {
     public Subscription getByEventUrl(String url) throws ServiceException {
         try {
             String signedURL = oAuthHelper.signURL(url);
+            log.debug("Signed URL : " +  signedURL);
             return restTemplate.getForObject(signedURL, Subscription.class);
         } catch (OAuthCommunicationException |
                  OAuthExpectationFailedException |
