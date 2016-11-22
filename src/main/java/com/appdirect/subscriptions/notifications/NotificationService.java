@@ -4,11 +4,17 @@ import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
 import com.appdirect.subscriptions.notifications.domain.ServiceResponse;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
+import com.appdirect.subscriptions.operations.domain.entities.Subscription;
+import com.appdirect.subscriptions.operations.exceptions.ServiceException;
 import com.appdirect.subscriptions.operations.processors.CreateSubscriptionProcessor;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
@@ -44,8 +50,25 @@ public class NotificationService {
     public boolean notifiySubscription(String url,
                                        String accountId,
                                        String errorCode) {
-        ServiceResponse serviceResponse = new ServiceResponse(true, null, null, accountId);
-        restTemplate.postForObject(url, serviceResponse, ServiceResponse.class);
+        ServiceResponse serviceResponse;
+
+        if(errorCode == null) {
+            serviceResponse = new ServiceResponse(true, null, null, accountId);
+        } else {
+            serviceResponse = new ServiceResponse(false, errorCode, null);
+        }
+
+        try {
+            String signedUrl = oAuthHelper.signURL(url);
+            restTemplate.postForObject(signedUrl, serviceResponse, ServiceResponse.class);
+        } catch (OAuthCommunicationException |
+                OAuthExpectationFailedException |
+                OAuthMessageSignerException e) {
+            throw new ServiceException(e);
+        } catch (RestClientException e) {
+            throw new ServiceException(e);
+        }
+
         return true;
     }
 

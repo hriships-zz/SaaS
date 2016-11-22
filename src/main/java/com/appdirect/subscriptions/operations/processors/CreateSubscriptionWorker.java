@@ -1,6 +1,5 @@
 package com.appdirect.subscriptions.operations.processors;
 
-import com.appdirect.subscriptions.notifications.NotificationRepository;
 import com.appdirect.subscriptions.notifications.NotificationService;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
 import com.appdirect.subscriptions.operations.domain.entities.Subscription;
@@ -18,14 +17,14 @@ public class CreateSubscriptionWorker implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(CreateSubscriptionWorker.class);
     private final SubscriptionNotification eventNotification;
     private final NotificationService notificationService;
-    private final SubscriptionService subscrptionservice;
+    private final SubscriptionService subscriptionService;
 
     public CreateSubscriptionWorker(SubscriptionNotification notification,
                                     NotificationService notificationRepo,
                                     SubscriptionService service) {
         this.eventNotification = notification;
         this.notificationService = notificationRepo;
-        this.subscrptionservice = service;
+        this.subscriptionService = service;
     }
 
     @Override
@@ -33,14 +32,16 @@ public class CreateSubscriptionWorker implements Runnable {
         String url = eventNotification.getUrl();
         log.info("Event ID :" + eventNotification.getId() + " URL " + url);
         try {
-            Subscription subscription = subscrptionservice.getByEventUrl(url);
-            subscrptionservice.create(subscription);
+            Subscription subscription = subscriptionService.getByEventUrl(url);
+            subscriptionService.create(subscription);
             String accountIdentifier = subscription.getPayload().getAccount().getAccountIdentifier();
             notificationService.notifiySubscription(url + "/result", accountIdentifier, null);
         } catch (ServiceException e) {
-            e.printStackTrace();
+            log.error("Create subscription exception occurred, retrying create subscription" + e.getMessage());
+            eventNotification.setProcessed(false);
+            notificationService.update(eventNotification);
         } catch (DataIntegrityViolationException e) {
-            //TODO: Subscription already exist
+            notificationService.notifiySubscription(url + "/result", null, "USER_ALREADY_EXISTS");
         }
     }
 }
