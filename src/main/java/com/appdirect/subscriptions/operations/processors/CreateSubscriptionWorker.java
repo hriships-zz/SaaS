@@ -37,7 +37,7 @@ public class CreateSubscriptionWorker implements Runnable {
             String accountIdentifier = subscription.getPayload().getAccount().getAccountIdentifier();
             notificationService.notifiySubscription(url + "/result", accountIdentifier, null);
         } catch (ServiceException e) {
-            log.error("Create subscription exception occurred, retrying create subscription" + e.getMessage());
+            log.error("Create subscription exception occurred, retrying create subscription : " + e.getMessage());
             eventNotification.setProcessed(false);
             notificationService.update(eventNotification);
         } catch (DataIntegrityViolationException e) {

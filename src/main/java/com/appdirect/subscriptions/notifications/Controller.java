@@ -21,7 +21,7 @@ public class Controller {
 
     @RequestMapping(path = "/{type}/subscriptions", method = RequestMethod.GET)
     public ResponseEntity<ServiceResponse> subscribeNotification(@PathVariable String type,
-                                                                 @RequestParam(value = "url", required = true) String eventUrl) {
+                                                                 @RequestParam(value = "eventUrl", required = true) String eventUrl) {
 
         notificationService.createNewEvent(new SubscriptionNotification(eventUrl, NotificationType.valueOf(type), false));
         return new ResponseEntity<ServiceResponse>(new ServiceResponse(true), HttpStatus.ACCEPTED);
