@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
     @Autowired
-    DBRepository dbRepo;
+    NotificationRepository dbRepo;
 
     public SubscriptionNotification createNewEvent(SubscriptionNotification notification) {
         return dbRepo.save(notification);

@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 @RepositoryRestResource
-public interface DBRepository extends JpaRepository<SubscriptionNotification, Long> {
+public interface NotificationRepository extends JpaRepository<SubscriptionNotification, Long> {
 
     @Query("FROM SubscriptionNotification s where s.type = :type")
     Collection<SubscriptionNotification> findByType(@Param("type") NotificationType type);

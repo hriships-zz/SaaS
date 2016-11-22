@@ -1,6 +1,7 @@
 package com.appdirect.subscriptions.operations.createsubscription;
 
-import com.appdirect.subscriptions.notifications.DBRepository;
+import com.appdirect.common.services.OAuthHelper;
+import com.appdirect.subscriptions.notifications.NotificationRepository;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
 import org.slf4j.Logger;
@@ -24,7 +25,10 @@ public class EventProcessor {
     private static final Logger log = LoggerFactory.getLogger(EventProcessor.class);
 
     @Autowired
-    private DBRepository notificationRepo;
+    private NotificationRepository notificationRepo;
+
+    @Autowired
+    private OAuthHelper oAuthHelper;
 
     @Scheduled(fixedRate = 10000)
     public void processEvents() {
@@ -44,15 +48,17 @@ public class EventProcessor {
     }
 
     private void processSubscriptions(ExecutorService eventService, List<SubscriptionNotification> notifications) {
-        notifications.forEach(n -> {
-            log.debug("Subscription Event Id : " + n.getId());
-            updateStatus(n);
-            startSubscriptionProcess(eventService, n);
+        notifications.forEach(notification -> {
+            log.debug("Subscription Event Id : " + notification.getId());
+            updateStatus(notification);
+            startSubscriptionProcess(eventService, notification, oAuthHelper);
         });
     }
 
-    private void startSubscriptionProcess(ExecutorService eventService, SubscriptionNotification n) {
-        eventService.submit(new EventWorker(n, notificationRepo));
+    private void startSubscriptionProcess(ExecutorService eventService,
+                                          SubscriptionNotification notification,
+                                          OAuthHelper oAuthHelper) {
+        eventService.submit(new EventWorker(notification, notificationRepo, oAuthHelper));
     }
 
     private void updateStatus(SubscriptionNotification n) {
