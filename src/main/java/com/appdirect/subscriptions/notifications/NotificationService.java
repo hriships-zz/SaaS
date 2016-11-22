@@ -4,6 +4,9 @@ import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
 import com.appdirect.subscriptions.notifications.domain.ServiceResponse;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
+import com.appdirect.subscriptions.operations.processors.CreateSubscriptionProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +20,8 @@ import java.util.Collection;
 @Service
 public class NotificationService {
 
+    private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
+
     @Autowired
     private NotificationRepository notificationRepository;
 
@@ -27,6 +32,7 @@ public class NotificationService {
     private OAuthHelper oAuthHelper;
 
     public SubscriptionNotification createNewEvent(SubscriptionNotification notification) {
+        log.debug("Create subscription info : " + notification.toString());
         return notificationRepository.save(notification);
     }
 

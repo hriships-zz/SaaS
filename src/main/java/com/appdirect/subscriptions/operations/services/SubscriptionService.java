@@ -9,7 +9,9 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -38,10 +40,12 @@ public class SubscriptionService {
                  OAuthExpectationFailedException |
                  OAuthMessageSignerException e) {
             throw new ServiceException(e);
+        } catch (RestClientException e) {
+            throw new ServiceException(e);
         }
     }
 
-    public Subscription create(Subscription subscription) {
+    public Subscription create(Subscription subscription) throws DataIntegrityViolationException {
         Account account = accountService.create(new Account(AccountStatusEnum.ACTIVE));
         subscription.getPayload().setAccount(account);
         return subscriptionService.create(subscription);

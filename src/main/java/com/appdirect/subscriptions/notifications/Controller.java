@@ -4,6 +4,8 @@ import com.appdirect.subscriptions.notifications.domain.NotificationType;
 import com.appdirect.subscriptions.notifications.domain.ServiceResponse;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -18,11 +20,10 @@ public class Controller {
     private NotificationService notificationService;
 
     @RequestMapping(path = "/{type}/subscriptions", method = RequestMethod.GET)
-    public @ResponseBody
-    ServiceResponse subscribeNotification(@PathVariable String type,
-                                          @RequestParam(value = "url", required = true) String eventUrl) {
+    public ResponseEntity<ServiceResponse> subscribeNotification(@PathVariable String type,
+                                                                 @RequestParam(value = "url", required = true) String eventUrl) {
 
         notificationService.createNewEvent(new SubscriptionNotification(eventUrl, NotificationType.valueOf(type), false));
-        return new ServiceResponse(true);
+        return new ResponseEntity<ServiceResponse>(new ServiceResponse(true), HttpStatus.ACCEPTED);
     }
 }

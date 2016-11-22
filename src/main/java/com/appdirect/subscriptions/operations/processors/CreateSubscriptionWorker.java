@@ -8,6 +8,7 @@ import com.appdirect.subscriptions.operations.exceptions.ServiceException;
 import com.appdirect.subscriptions.operations.services.SubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Created by hrishikeshshinde on 22/11/16.
@@ -35,9 +36,11 @@ public class CreateSubscriptionWorker implements Runnable {
             Subscription subscription = subscrptionservice.getByEventUrl(url);
             subscrptionservice.create(subscription);
             String accountIdentifier = subscription.getPayload().getAccount().getAccountIdentifier();
-            notificationService.notifiySubscription(url, accountIdentifier, null);
+            notificationService.notifiySubscription(url + "/result", accountIdentifier, null);
         } catch (ServiceException e) {
             e.printStackTrace();
+        } catch (DataIntegrityViolationException e) {
+            //TODO: Subscription already exist
         }
     }
 }
