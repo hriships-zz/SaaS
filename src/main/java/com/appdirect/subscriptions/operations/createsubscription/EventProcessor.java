@@ -46,10 +46,18 @@ public class EventProcessor {
     private void processSubscriptions(ExecutorService eventService, List<SubscriptionNotification> notifications) {
         notifications.forEach(n -> {
             log.debug("Subscription Event Id : " + n.getId());
-            n.setProcessed(true);
-            notificationRepo.save(n);
-            eventService.submit(new EventWorker(n, notificationRepo));
+            updateStatus(n);
+            startSubscriptionProcess(eventService, n);
         });
+    }
+
+    private void startSubscriptionProcess(ExecutorService eventService, SubscriptionNotification n) {
+        eventService.submit(new EventWorker(n, notificationRepo));
+    }
+
+    private void updateStatus(SubscriptionNotification n) {
+        n.setProcessed(true);
+        notificationRepo.save(n);
     }
 
     private List<SubscriptionNotification> getSubscriptionNotifications() {
