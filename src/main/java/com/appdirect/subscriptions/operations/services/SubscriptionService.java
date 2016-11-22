@@ -37,10 +37,8 @@ public class SubscriptionService {
         } catch (OAuthCommunicationException |
                  OAuthExpectationFailedException |
                  OAuthMessageSignerException e) {
-            new ServiceException(e);
+            throw new ServiceException(e);
         }
-
-        return new Subscription();
     }
 
     public Subscription create(Subscription subscription) {
