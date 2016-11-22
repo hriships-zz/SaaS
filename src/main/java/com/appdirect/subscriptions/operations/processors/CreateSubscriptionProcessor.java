@@ -1,14 +1,15 @@
-package com.appdirect.subscriptions.operations.createsubscription;
+package com.appdirect.subscriptions.operations.processors;
 
-import com.appdirect.common.services.OAuthHelper;
-import com.appdirect.subscriptions.notifications.NotificationRepository;
+import com.appdirect.subscriptions.notifications.NotificationService;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
+import com.appdirect.subscriptions.operations.services.SubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,15 +21,18 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Component
-public class EventProcessor {
+public class CreateSubscriptionProcessor {
 
-    private static final Logger log = LoggerFactory.getLogger(EventProcessor.class);
-
-    @Autowired
-    private NotificationRepository notificationRepo;
+    private static final Logger log = LoggerFactory.getLogger(CreateSubscriptionProcessor.class);
 
     @Autowired
-    private OAuthHelper oAuthHelper;
+    private NotificationService notificationService;
+
+    @Autowired
+    private SubscriptionService subscriptionService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Scheduled(fixedRate = 10000)
     public void processEvents() {
@@ -51,24 +55,24 @@ public class EventProcessor {
         notifications.forEach(notification -> {
             log.debug("Subscription Event Id : " + notification.getId());
             updateStatus(notification);
-            startSubscriptionProcess(eventService, notification, oAuthHelper);
+            startSubscriptionProcess(notification, eventService, subscriptionService);
         });
     }
 
-    private void startSubscriptionProcess(ExecutorService eventService,
-                                          SubscriptionNotification notification,
-                                          OAuthHelper oAuthHelper) {
-        eventService.submit(new EventWorker(notification, notificationRepo, oAuthHelper));
+    private void startSubscriptionProcess(SubscriptionNotification notification,
+                                          ExecutorService eventService,
+                                          SubscriptionService service) {
+        eventService.submit(new CreateSubscriptionWorker(notification, notificationService, service));
     }
 
-    private void updateStatus(SubscriptionNotification n) {
-        n.setProcessed(true);
-        notificationRepo.save(n);
+    private void updateStatus(SubscriptionNotification notification) {
+        notification.setProcessed(true);
+        notificationService.update(notification);
     }
 
     private List<SubscriptionNotification> getSubscriptionNotifications() {
         return (List<SubscriptionNotification>)
-                    notificationRepo.findByTypeAndStatus(NotificationType.CREATE, false);
+                    notificationService.getEventsTypeAndStatus(NotificationType.CREATE, false);
     }
 
     private ExecutorService getExecutorService() {

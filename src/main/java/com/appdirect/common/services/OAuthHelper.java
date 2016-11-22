@@ -21,7 +21,7 @@ public class OAuthHelper {
     @Value("${oAuthSecrete}")
     private String oAuthSecrete;
 
-    public String signKey(String url) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
+    public String signURL(String url) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
         OAuthConsumer consumer = new DefaultOAuthConsumer("cloudtest-141946", "hUFnL5Cnz4jbexwB");
         consumer.setSigningStrategy( new QueryStringSigningStrategy());
         String signedUrl = consumer.sign(url);

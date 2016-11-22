@@ -16,4 +16,24 @@ public class Account {
 
     @Enumerated(EnumType.STRING)
     private AccountStatusEnum status;
+
+    public Account() {
+    }
+
+    public Account(AccountStatusEnum status) {
+        this.status = status;
+    }
+
+    public Account(String accountIdentifier, AccountStatusEnum status) {
+        this.accountIdentifier = accountIdentifier;
+        this.status = status;
+    }
+
+    public String getAccountIdentifier() {
+        return accountIdentifier;
+    }
+
+    public AccountStatusEnum getStatus() {
+        return status;
+    }
 }
