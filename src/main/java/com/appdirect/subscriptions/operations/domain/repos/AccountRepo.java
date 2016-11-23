@@ -9,5 +9,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 
 @RepositoryRestResource
-public interface AccountRepo extends JpaRepository<Account, Long> {
+public interface AccountRepo extends JpaRepository<Account, String> {
+    Account findByAccountIdentifier(String accountIdentifier);
 }

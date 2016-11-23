@@ -36,4 +36,8 @@ public class Account {
     public AccountStatusEnum getStatus() {
         return status;
     }
+
+    public void setStatus(AccountStatusEnum status) {
+        this.status = status;
+    }
 }

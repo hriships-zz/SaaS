@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class CreateSubscriptionProcessor {
 
-    private static final Logger log = LoggerFactory.getLogger(CreateSubscriptionProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateSubscriptionProcessor.class);
 
     @Autowired
     private NotificationService notificationService;
@@ -31,8 +30,6 @@ public class CreateSubscriptionProcessor {
     @Autowired
     private SubscriptionService subscriptionService;
 
-    @Autowired
-    private RestTemplate restTemplate;
 
     @Scheduled(fixedRate = 10000)
     public void processEvents() {
@@ -47,13 +44,13 @@ public class CreateSubscriptionProcessor {
         try {
             eventService.awaitTermination(5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            log.error("Create event processor await : " + e.getMessage());
+            LOGGER.error("Create event processor await : " + e.getMessage());
         }
     }
 
     private void processSubscriptions(ExecutorService eventService, List<SubscriptionNotification> notifications) {
         notifications.forEach(notification -> {
-            log.debug("Subscription Event Id : " + notification.getId());
+            LOGGER.debug("Subscription Event Id : " + notification.getId());
             updateStatus(notification);
             startSubscriptionProcess(notification, eventService, subscriptionService);
         });

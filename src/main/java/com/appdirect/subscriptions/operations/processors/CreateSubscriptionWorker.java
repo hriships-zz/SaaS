@@ -16,23 +16,23 @@ import org.springframework.dao.DataIntegrityViolationException;
  */
 
 public class CreateSubscriptionWorker implements Runnable {
-    private static final Logger log = LoggerFactory.getLogger(CreateSubscriptionWorker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateSubscriptionWorker.class);
     private final SubscriptionNotification eventNotification;
     private final NotificationService notificationService;
     private final SubscriptionService subscriptionService;
 
     public CreateSubscriptionWorker(SubscriptionNotification notification,
-                                    NotificationService notificationRepo,
+                                    NotificationService notificationService,
                                     SubscriptionService service) {
         this.eventNotification = notification;
-        this.notificationService = notificationRepo;
+        this.notificationService = notificationService;
         this.subscriptionService = service;
     }
 
     @Override
     public void run() {
         String url = eventNotification.getUrl();
-        log.info("Event ID :" + eventNotification.getId() + " URL " + url);
+        LOGGER.info("Event ID :" + eventNotification.getId() + " URL " + url);
 
         try {
             Subscription subscription = subscriptionService.getByEventUrl(url);
@@ -40,11 +40,11 @@ public class CreateSubscriptionWorker implements Runnable {
             String accountIdentifier = subscription.getPayload().getAccount().getAccountIdentifier();
             notificationService.notifiySubscription(url + "/result", accountIdentifier, null);
         } catch (ServiceException e) {
-            log.error("Create subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
+            LOGGER.error("Create subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
             eventNotification.setProcessed(false);
             notificationService.update(eventNotification);
         } catch (AuthException e) {
-            log.error("Authentication exception occurred: " + e.getMessage(), e);
+            LOGGER.error("Authentication exception occurred: " + e.getMessage(), e);
         } catch (DataIntegrityViolationException e) {
             notificationService.notifiySubscription(url + "/result", null, ErrorStatusEnum.USER_ALREADY_EXISTS);
         }

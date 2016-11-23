@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -68,7 +69,18 @@ public class SubscriptionService {
     }
 
     public Subscription cancel(Subscription subscription) {
-        return null;
+
+        String accountId = subscription.getPayload().getAccount().getAccountIdentifier();
+
+        try {
+            Account account = accountService.findByAccountId(accountId);
+            account.setStatus(AccountStatusEnum.INACTIVE);
+            accountService.updateAccount(account);
+            subscription.getPayload().setAccount(account);
+            return subscription;
+        } catch(Exception ex){
+            throw new DataRetrievalFailureException("Account with account identifier "+accountId+" not found.", ex);
+        }
     }
 
 

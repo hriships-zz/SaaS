@@ -18,4 +18,11 @@ public class AccountService {
     public Account create(Account account) {
         return accountRepo.save(account);
     }
+
+    public Account findByAccountId(String accountId) {
+        return accountRepo.findByAccountIdentifier(accountId);
+    }
+
+    public void updateAccount(Account account) {
+    }
 }
