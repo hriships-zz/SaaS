@@ -22,7 +22,7 @@ public class SaasAppApplicationTests {
 
 	@Test
 	public void contextLoads() throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
-		String event = "https://marketplace.appdirect.com/api/integration/v1/events/ba15aaff-db2b-499b-9215-f5b23b747ad2";
+		String event = "https://marketplace.appdirect.com/api/integration/v1/events/e0121e5c-e4a6-4269-a328-93dd5748b5dee";
 		OAuthConsumer consumer = new DefaultOAuthConsumer("cloudsaas-142142", "tkosyYzFHXNY");
 		URL url = new URL(event);
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
