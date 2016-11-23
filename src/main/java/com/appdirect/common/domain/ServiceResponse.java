@@ -1,4 +1,4 @@
-package com.appdirect.subscriptions.notifications.domain;
+package com.appdirect.common.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

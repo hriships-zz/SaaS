@@ -2,7 +2,7 @@ package com.appdirect.subscriptions.notifications;
 
 import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
-import com.appdirect.subscriptions.notifications.domain.ServiceResponse;
+import com.appdirect.common.domain.ServiceResponse;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
