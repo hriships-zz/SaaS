@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/notifications")
 public class NotificationController {
 
-    private static final Logger log = LoggerFactory.getLogger(NotificationController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationController.class);
 
     @Autowired
     private NotificationService notificationService;
@@ -31,8 +31,9 @@ public class NotificationController {
     public ResponseEntity<ServiceResponse> subscribeNotification(@PathVariable String type,
                                                                  @RequestParam(value = "eventUrl", required = true) String eventUrl,
                                                                  @RequestHeader(value = "Authorization") String authorization) {
-        log.info("Auth : " + authorization);
+        LOGGER.debug("Auth : " + authorization);
         oAuthHelper.authenticateSignature(authorization);
+
         notificationService.createNewEvent(new SubscriptionNotification(eventUrl, NotificationType.valueOf(type), false));
         return new ResponseEntity<ServiceResponse>(new ServiceResponse(true), HttpStatus.ACCEPTED);
     }

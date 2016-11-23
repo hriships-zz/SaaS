@@ -26,7 +26,7 @@ import java.util.Collection;
 @Service
 public class NotificationService {
 
-    private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -38,7 +38,7 @@ public class NotificationService {
     private OAuthHelper oAuthHelper;
 
     public SubscriptionNotification createNewEvent(SubscriptionNotification notification) {
-        log.debug("Create subscription info : " + notification.toString());
+        LOGGER.debug("Create subscription info : " + notification.toString());
         return notificationRepository.save(notification);
     }
 
