@@ -31,10 +31,9 @@ public class OAuthHelper {
     private String oAuthSecrete;
 
     public void authenticateSignature(String authHeader){
-        Map<String, String> headers = extractHeaders(authHeader);
-        authHeader.split(",");
-        String oauthConsumerKey = null;
-        String oauthSignature = null;
+        Map<String, String> oauthParams = extractHeaders(authHeader);
+        String oauthConsumerKey = oauthParams.get(OAUTH_CONSUMER_KEY);
+        String oauthSignature = oauthParams.get(OAUTH_SIGNATURE);
 
         if(!oauthConsumerKey.equals(oAuthKey)){
             throw new AuthException("Authentication failed, unable to verify authkey");
