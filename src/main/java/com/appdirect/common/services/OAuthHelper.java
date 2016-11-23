@@ -53,7 +53,7 @@ public class OAuthHelper {
     private Map<String, String> extractHeaders(String authHeader) {
         authHeader = authHeader.replace("OAuth ", "");
         authHeader = authHeader.replace("\"", "");
-        return Arrays.asList(authHeader.split(","))
+        return Arrays.asList(authHeader.split(", "))
                 .stream()
                 .map(elem -> elem.split("="))
                 .collect(Collectors.toMap(e -> e[0], e -> e[1]));
