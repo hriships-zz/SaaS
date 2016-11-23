@@ -8,6 +8,7 @@ import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification
 import com.appdirect.subscriptions.operations.domain.entities.ErrorStatusEnum;
 import com.appdirect.subscriptions.operations.exceptions.ServiceException;
 import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import org.slf4j.Logger;
@@ -61,9 +62,8 @@ public class NotificationService {
         try {
             String signedUrl = oAuthHelper.signURL(url);
             restTemplate.postForObject(signedUrl, serviceResponse, ServiceResponse.class);
-        } catch (OAuthCommunicationException |
-                OAuthExpectationFailedException |
-                OAuthMessageSignerException e) {
+
+        } catch (OAuthException e) {
             throw new AuthException(e);
         } catch (RestClientException e) {
             if(e.getMessage().equalsIgnoreCase(AuthException.UNAUTHORIZED)) {

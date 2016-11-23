@@ -8,6 +8,7 @@ import com.appdirect.subscriptions.operations.domain.entities.Subscription;
 import com.appdirect.subscriptions.operations.exceptions.ServiceException;
 import com.appdirect.subscriptions.operations.processors.CreateSubscriptionWorker;
 import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import org.slf4j.Logger;
@@ -45,9 +46,8 @@ public class SubscriptionService {
             String signedURL = oAuthHelper.signURL(url);
             log.info("Signed URL : " +  signedURL);
             return restTemplate.getForObject(signedURL, Subscription.class);
-        } catch (OAuthCommunicationException |
-                 OAuthExpectationFailedException |
-                 OAuthMessageSignerException e) {
+
+        } catch (OAuthException e) {
             throw new AuthException(e);
         } catch (RestClientException e) {
             if(e.getMessage().equalsIgnoreCase(AuthException.UNAUTHORIZED)) {
@@ -62,10 +62,6 @@ public class SubscriptionService {
         Account account = accountService.create(new Account(AccountStatusEnum.ACTIVE));
         subscription.getPayload().setAccount(account);
         return subscriptionService.create(subscription);
-    }
-
-    public Subscription update(Subscription subscription) {
-        return null;
     }
 
     public Subscription cancel(Subscription subscription) {

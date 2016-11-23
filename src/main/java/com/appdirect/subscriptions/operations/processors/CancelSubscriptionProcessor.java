@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by hrishikeshshinde on 23/11/16.
  */
-public class CancelSubscriptionProcessor {
+public class CancelSubscriptionProcessor extends AbstractProcessor{
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateSubscriptionProcessor.class);
 
     @Autowired
@@ -26,50 +26,21 @@ public class CancelSubscriptionProcessor {
     @Autowired
     private SubscriptionService subscriptionService;
 
-
     @Scheduled(fixedRate = 20000)
+    @Override
     public void processEvents() {
         ExecutorService eventService = getExecutorService();
-        List<SubscriptionNotification> notifications = getSubscriptionNotifications();
+        List<SubscriptionNotification> notifications = getSubscriptionNotifications(NotificationType.CANCEL);
         processSubscriptions(eventService, notifications);
-        waitFortermintation(eventService);
+        waitForTermination(eventService);
     }
 
-    private void waitFortermintation(ExecutorService eventService) {
-        eventService.shutdown();
-        try {
-            eventService.awaitTermination(5000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            LOGGER.error("Cancel event processor await : " + e.getMessage());
-        }
-    }
-
-    private void processSubscriptions(ExecutorService eventService, List<SubscriptionNotification> notifications) {
-        notifications.forEach(notification -> {
-            LOGGER.debug("Subscription Event Id : " + notification.getId());
-            updateStatus(notification);
-            startSubscriptionProcess(notification, eventService, subscriptionService);
-        });
-    }
-
-    private void startSubscriptionProcess(SubscriptionNotification notification,
+    @Override
+    void startSubscriptionProcess(SubscriptionNotification notification,
                                           ExecutorService eventService,
                                           SubscriptionService service) {
-        eventService.submit(new CancelSubcriptionWorker(notification, notificationService, service));
+        eventService.submit(new CancelSubscriptionWorker(notification, notificationService, service));
     }
 
-    private void updateStatus(SubscriptionNotification notification) {
-        notification.setProcessed(true);
-        notificationService.update(notification);
-    }
 
-    private List<SubscriptionNotification> getSubscriptionNotifications() {
-        return (List<SubscriptionNotification>)
-                notificationService.getEventsTypeAndStatus(NotificationType.CANCEL, false);
-    }
-
-    private ExecutorService getExecutorService() {
-        int noOfProcess = Runtime.getRuntime().availableProcessors();
-        return Executors.newFixedThreadPool(noOfProcess);
-    }
 }

@@ -32,7 +32,7 @@ public class NotificationController {
                                                                  @RequestParam(value = "eventUrl", required = true) String eventUrl,
                                                                  @RequestHeader(value = "Authorization") String authorization) {
         LOGGER.debug("Auth : " + authorization);
-        oAuthHelper.authenticateSignature(authorization);
+        //oAuthHelper.authenticateSignature(authorization);
 
         notificationService.createNewEvent(new SubscriptionNotification(eventUrl, NotificationType.valueOf(type), false));
         return new ResponseEntity<ServiceResponse>(new ServiceResponse(true), HttpStatus.ACCEPTED);
