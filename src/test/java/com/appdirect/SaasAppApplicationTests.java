@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -22,13 +25,13 @@ public class SaasAppApplicationTests {
 
 	@Test
 	public void contextLoads() throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
-		String event = "https://marketplace.appdirect.com/api/integration/v1/events/e0121e5c-e4a6-4269-a328-93dd5748b5dee";
-		OAuthConsumer consumer = new DefaultOAuthConsumer("cloudsaas-142142", "tkosyYzFHXNY");
-		URL url = new URL(event);
-		HttpURLConnection request = (HttpURLConnection) url.openConnection();
-		consumer.sign(request);
-		request.connect();
-		System.out.print(request.getResponseCode());
+		String auth = "OAuth oauth_consumer_key=\"cloudsaas-142142\", oauth_nonce=\"3717820168993121793\", oauth_signature=\"sp7GkhLg9n%2BgE%2B8YryInGYkaPZA%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"1479860919\", oauth_version=\"1.0\"";
+		Map<String, String> data = Arrays.asList(auth.split(","))
+				.stream()
+				.map(elem -> elem.split("="))
+				.collect(Collectors.toMap(e -> e[0], e -> e[1]));
+		System.out.println(data);
+
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.appdirect.subscriptions.notifications;
 
+import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
 import com.appdirect.subscriptions.notifications.domain.ServiceResponse;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
@@ -23,11 +24,15 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private OAuthHelper oAuthHelper;
+
     @RequestMapping(path = "/{type}/subscriptions", method = RequestMethod.GET)
     public ResponseEntity<ServiceResponse> subscribeNotification(@PathVariable String type,
                                                                  @RequestParam(value = "eventUrl", required = true) String eventUrl,
                                                                  @RequestHeader(value = "Authorization") String authorization) {
         log.info("Auth : " + authorization);
+        oAuthHelper.authenticateSignature(authorization);
         notificationService.createNewEvent(new SubscriptionNotification(eventUrl, NotificationType.valueOf(type), false));
         return new ResponseEntity<ServiceResponse>(new ServiceResponse(true), HttpStatus.ACCEPTED);
     }

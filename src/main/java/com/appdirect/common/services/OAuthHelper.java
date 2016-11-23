@@ -1,13 +1,19 @@
 package com.appdirect.common.services;
 
+import com.appdirect.common.exceptions.AuthException;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.signature.QueryStringSigningStrategy;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by hrishikeshshinde on 22/11/16.
@@ -15,11 +21,36 @@ import org.springframework.stereotype.Service;
 
 public class OAuthHelper {
 
+    private static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
+    private static final String OAUTH_SIGNATURE = "oauth_signature";
+
     @Value("${oAuthKey}")
     private String oAuthKey;
 
     @Value("${oAuthSecrete}")
     private String oAuthSecrete;
+
+    public void authenticateSignature(String authHeader){
+        Map<String, String> headers = extractHeaders(authHeader);
+        authHeader.split(",");
+        String oauthConsumerKey = null;
+        String oauthSignature = null;
+
+        if(!oauthConsumerKey.equals(oAuthKey)){
+            throw new AuthException("Authentication failed, unable to verify authkey");
+        }
+
+        if(!oauthSignature.equals(HmacUtils.hmacSha1(oAuthKey, oAuthSecrete).toString())){
+            throw new AuthException("Authentication failed, unable to verify signature");
+        }
+    }
+
+    private Map<String, String> extractHeaders(String authHeader) {
+        return Arrays.asList(authHeader.split(","))
+                .stream()
+                .map(elem -> elem.split("="))
+                .collect(Collectors.toMap(e -> e[0], e -> e[1]));
+    }
 
     public String signURL(String url) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
         OAuthConsumer consumer = new DefaultOAuthConsumer(oAuthKey, oAuthSecrete);
