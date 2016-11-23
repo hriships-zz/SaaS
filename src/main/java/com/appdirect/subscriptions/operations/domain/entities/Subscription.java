@@ -47,4 +47,8 @@ public class Subscription {
     public String getType() {
         return type;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

@@ -1,16 +1,14 @@
 package com.appdirect.subscriptions.operations.services;
 
 import com.appdirect.common.exceptions.AuthException;
+import com.appdirect.common.exceptions.EntityNotFoundException;
 import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.operations.domain.entities.Account;
 import com.appdirect.subscriptions.operations.domain.entities.AccountStatusEnum;
 import com.appdirect.subscriptions.operations.domain.entities.Subscription;
+import com.appdirect.subscriptions.operations.domain.repos.SubscriptionRepo;
 import com.appdirect.subscriptions.operations.exceptions.ServiceException;
-import com.appdirect.subscriptions.operations.processors.CreateSubscriptionWorker;
-import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +37,13 @@ public class SubscriptionService {
     private AccountService accountService;
 
     @Autowired
-    private SubscriptionService subscriptionService;
+    private SubscriptionRepo subscriptionRepo;
 
     public Subscription getByEventUrl(String url) throws ServiceException {
         try {
             String signedURL = oAuthHelper.signURL(url);
             log.info("Signed URL : " +  signedURL);
             return restTemplate.getForObject(signedURL, Subscription.class);
-
         } catch (OAuthException e) {
             throw new AuthException(e);
         } catch (RestClientException e) {
@@ -61,10 +58,29 @@ public class SubscriptionService {
     public Subscription create(Subscription subscription) throws DataIntegrityViolationException {
         Account account = accountService.create(new Account(AccountStatusEnum.ACTIVE));
         subscription.getPayload().setAccount(account);
-        return subscriptionService.create(subscription);
+        return subscriptionRepo.save(subscription);
     }
 
-    public Subscription cancel(Subscription subscription) {
+    public Subscription update(Subscription subscription) throws EntityNotFoundException, DataIntegrityViolationException {
+        String accountId = subscription.getPayload().getAccount().getAccountIdentifier();
+        Subscription currentSubscription;
+        try{
+            currentSubscription = subscriptionRepo.findByPayloadAccountAccountIdentifier(accountId);
+        }catch(Exception e){
+            throw new EntityNotFoundException("Subscription for account "+accountId+" not found", e);
+        }
+
+        try{
+            subscription.setId(currentSubscription.getId());
+            subscriptionRepo.save(subscription);
+        }catch(Exception e){
+            throw new DataIntegrityViolationException("Subscription update error with account "+accountId, e);
+        }
+
+        return subscription;
+    }
+
+    public Subscription cancel(Subscription subscription) throws EntityNotFoundException {
 
         String accountId = subscription.getPayload().getAccount().getAccountIdentifier();
 
@@ -74,10 +90,8 @@ public class SubscriptionService {
             accountService.updateAccount(account);
             subscription.getPayload().setAccount(account);
             return subscription;
-        } catch(Exception ex){
-            throw new DataRetrievalFailureException("Account with account identifier "+accountId+" not found.", ex);
+        } catch(Exception e){
+            throw new EntityNotFoundException("Account not found", e);
         }
     }
-
-
 }

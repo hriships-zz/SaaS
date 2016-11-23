@@ -10,4 +10,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource
 public interface SubscriptionRepo extends JpaRepository<Subscription, Long> {
+    Subscription findByPayloadAccountAccountIdentifier(String id);
 }

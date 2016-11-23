@@ -21,7 +21,7 @@ public abstract class AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessor.class);
 
     @Autowired
-    protected NotificationService notificationService;
+    private NotificationService notificationService;
 
     @Autowired
     private SubscriptionService subscriptionService;

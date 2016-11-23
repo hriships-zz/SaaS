@@ -48,9 +48,9 @@ public class NotificationService {
         return notificationRepository.findByTypeAndStatus(type, status);
     }
 
-    public boolean notifiySubscription(String url,
-                                       String accountId,
-                                       ErrorStatusEnum errorCode) {
+    public boolean notifySubscription(String url,
+                                      String accountId,
+                                      ErrorStatusEnum errorCode) {
         ServiceResponse serviceResponse;
 
         if(errorCode == null) {

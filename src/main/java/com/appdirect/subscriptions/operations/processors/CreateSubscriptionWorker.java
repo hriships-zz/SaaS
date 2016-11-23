@@ -17,6 +17,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 public class CreateSubscriptionWorker implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateSubscriptionWorker.class);
+
     private final SubscriptionNotification eventNotification;
     private final NotificationService notificationService;
     private final SubscriptionService subscriptionService;
@@ -38,15 +39,15 @@ public class CreateSubscriptionWorker implements Runnable {
             Subscription subscription = subscriptionService.getByEventUrl(url);
             subscriptionService.create(subscription);
             String accountIdentifier = subscription.getPayload().getAccount().getAccountIdentifier();
-            notificationService.notifiySubscription(url + "/result", accountIdentifier, null);
+            notificationService.notifySubscription(url + "/result", accountIdentifier, null);
         } catch (ServiceException e) {
             LOGGER.error("Create subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
             eventNotification.setProcessed(false);
             notificationService.update(eventNotification);
         } catch (AuthException e) {
-            LOGGER.error("Authentication exception occurred: " + e.getMessage(), e);
+            LOGGER.error("Create subscription exception occurred: " + e.getMessage(), e);
         } catch (DataIntegrityViolationException e) {
-            notificationService.notifiySubscription(url + "/result", null, ErrorStatusEnum.USER_ALREADY_EXISTS);
+            notificationService.notifySubscription(url + "/result", null, ErrorStatusEnum.USER_ALREADY_EXISTS);
         }
     }
 }

@@ -10,20 +10,19 @@ import com.appdirect.subscriptions.operations.exceptions.ServiceException;
 import com.appdirect.subscriptions.operations.services.SubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
- * Created by hrishikeshshinde on 23/11/16.
+ * Created by hrishikesh_shinde on 11/23/2016.
  */
-public class CancelSubscriptionWorker implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CancelSubscriptionWorker.class);
+public class UpdateSubscriptionWorker implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSubscriptionWorker.class);
 
     private final SubscriptionNotification eventNotification;
     private final NotificationService notificationService;
     private final SubscriptionService subscriptionService;
 
-    public CancelSubscriptionWorker(SubscriptionNotification notification,
-                                    NotificationService notificationService,
-                                    SubscriptionService service) {
+    public UpdateSubscriptionWorker(SubscriptionNotification notification, NotificationService notificationService, SubscriptionService service) {
         this.eventNotification = notification;
         this.notificationService = notificationService;
         this.subscriptionService = service;
@@ -36,17 +35,20 @@ public class CancelSubscriptionWorker implements Runnable {
 
         try {
             Subscription subscription = subscriptionService.getByEventUrl(url);
-            subscriptionService.cancel(subscription);
+            subscriptionService.update(subscription);
             notificationService.notifySubscription(url + "/result", null, null);
         } catch (ServiceException e) {
             LOGGER.error("Cancel subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
             eventNotification.setProcessed(false);
             notificationService.update(eventNotification);
         } catch (AuthException e) {
-            LOGGER.error("Cancel subscription exception occurred: " + e.getMessage(), e);
+            LOGGER.error("Update subscription exception occurred: " + e.getMessage(), e);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Cancel subscription exception occurred: " + e.getMessage(), e);
+            LOGGER.error("Update subscription exception occurred: " + e.getMessage(), e);
             notificationService.notifySubscription(url + "/result", null, ErrorStatusEnum.ACCOUNT_NOT_FOUND);
+        } catch (DataIntegrityViolationException e) {
+            LOGGER.error("Update subscription exception occurred: " + e.getMessage(), e);
+            notificationService.notifySubscription(url + "/result", null, ErrorStatusEnum.INVALID_RESPONSE);
         }
     }
 }
