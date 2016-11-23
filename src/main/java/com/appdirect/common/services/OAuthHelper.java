@@ -1,6 +1,7 @@
 package com.appdirect.common.services;
 
 import com.appdirect.common.exceptions.AuthException;
+import com.appdirect.subscriptions.notifications.NotificationService;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -8,6 +9,8 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.signature.QueryStringSigningStrategy;
 import org.apache.commons.codec.digest.HmacUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,8 @@ import java.util.stream.Collectors;
  */
 
 public class OAuthHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(OAuthHelper.class);
 
     private static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
     private static final String OAUTH_SIGNATURE = "oauth_signature";
@@ -35,6 +40,7 @@ public class OAuthHelper {
         String oauthConsumerKey = oauthParams.get(OAUTH_CONSUMER_KEY);
         String oauthSignature = oauthParams.get(OAUTH_SIGNATURE);
 
+        log.info("Auth key :" + oauthConsumerKey +" "+oAuthKey);
         if(!oauthConsumerKey.equals(oAuthKey)){
             throw new AuthException("Authentication failed, unable to verify authkey");
         }
