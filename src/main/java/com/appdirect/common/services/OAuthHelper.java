@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,16 +41,16 @@ public class OAuthHelper {
         String oauthConsumerKey = oauthParams.get(OAUTH_CONSUMER_KEY);
         String oauthSignature = oauthParams.get(OAUTH_SIGNATURE);
 
-        log.debug("Auth key :" + oauthConsumerKey +" "+oAuthKey);
+        log.info("Auth key :" + oauthConsumerKey +" "+oAuthKey);
         if(!oauthConsumerKey.equals(oAuthKey)){
             throw new AuthException("Authentication failed, unable to verify authkey");
         }
 
         String signature = HmacUtils.hmacSha1(oAuthKey, oAuthSecrete).toString();
-        log.debug("Auth Signature :" + oauthSignature +" "+ signature);
-        /*if(!oauthSignature.equals(signature)){
+        log.info("Auth signature :" + oauthSignature +" "+ signature);
+        if(!oauthSignature.equals(signature)){
             throw new AuthException("Authentication failed, unable to verify signature");
-        }*/
+        }
     }
 
     private Map<String, String> extractHeaders(String authHeader) {
@@ -62,6 +65,18 @@ public class OAuthHelper {
     public String signURL(String url) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
         OAuthConsumer consumer = new DefaultOAuthConsumer(oAuthKey, oAuthSecrete);
         consumer.setSigningStrategy( new QueryStringSigningStrategy());
-        return consumer.sign(url.substring(0, url.indexOf("?")));
+        String signedUrl = consumer.sign(url);
+
+        try {
+            URL urlObj = new URL(url);
+            HttpURLConnection request = (HttpURLConnection) urlObj.openConnection();
+            consumer.sign(request);
+            request.connect();
+            log.info("Response code: " + request.getResponseCode());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return signedUrl;
     }
 }
