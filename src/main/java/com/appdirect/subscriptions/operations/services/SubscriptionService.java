@@ -1,5 +1,7 @@
 package com.appdirect.subscriptions.operations.services;
 
+import com.appdirect.common.domain.ServiceResponse;
+import com.appdirect.common.domain.SignedData;
 import com.appdirect.common.exceptions.AuthException;
 import com.appdirect.common.exceptions.EntityNotFoundException;
 import com.appdirect.common.services.OAuthHelper;
@@ -14,6 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -41,9 +46,12 @@ public class SubscriptionService {
 
     public Subscription getByEventUrl(String url) throws ServiceException {
         try {
-            String signedURL = oAuthHelper.signURL(url);
-            log.info("Signed URL : " +  signedURL);
-            return restTemplate.getForObject(signedURL, Subscription.class);
+            SignedData signedData = oAuthHelper.signURL(url);
+            log.info("Signed URL : " +  signedData.getSignedUrl());
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", signedData.getOauthHeader());
+            HttpEntity<Subscription> entity = new HttpEntity<Subscription>(headers);
+            return restTemplate.exchange(signedData.getSignedUrl(), HttpMethod.POST, entity, Subscription.class).getBody();
         } catch (OAuthException e) {
             throw new AuthException(e);
         } catch (RestClientException e) {

@@ -5,6 +5,8 @@ import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
+import oauth.signpost.http.HttpRequest;
+import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
@@ -25,14 +27,14 @@ public class SaasAppApplicationTests {
 
 	@Test
 	public void contextLoads() throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
-		String auth = "OAuth oauth_consumer_key=\"cloudsaas-142142\", oauth_nonce=\"3717820168993121793\", oauth_signature=\"sp7GkhLg9n%2BgE%2B8YryInGYkaPZA%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"1479860919\", oauth_version=\"1.0\"";
-		auth = auth.replace("OAuth ", "");
-		auth = auth.replace("\"", "");
-		Map<String, String> data = Arrays.asList(auth.split(", "))
+
+		String url = "oauth_consumer_key=cloudsaas-142142&oauth_nonce=-7995465560126214428&oauth_signature=BWkbQC4WLhONUSMqadXmFK8ItxY%253D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1480346411&oauth_version=1.0";
+		String data = Arrays.asList(url.split("&"))
 				.stream()
-				.map(elem -> elem.split("="))
-				.collect(Collectors.toMap(e -> e[0], e -> e[1]));
-		System.out.println(data);
+				.map(elem -> elem.replace("=", "=\""))
+				.map(elem -> elem.concat("\""))
+				.collect(Collectors.joining(","));
+		System.out.print("OAuth realm=\"\"," + data);
 
 	}
 

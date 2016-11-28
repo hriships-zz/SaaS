@@ -1,5 +1,6 @@
 package com.appdirect.subscriptions.notifications;
 
+import com.appdirect.common.domain.SignedData;
 import com.appdirect.common.exceptions.AuthException;
 import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
@@ -14,6 +15,9 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -60,8 +64,11 @@ public class NotificationService {
         }
 
         try {
-            String signedUrl = oAuthHelper.signURL(url);
-            restTemplate.postForObject(signedUrl, serviceResponse, ServiceResponse.class);
+            SignedData signedData = oAuthHelper.signURL(url);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", signedData.getOauthHeader());
+            HttpEntity<ServiceResponse> entity = new HttpEntity<ServiceResponse>(serviceResponse, headers);
+            restTemplate.exchange(signedData.getSignedUrl(), HttpMethod.POST, entity, ServiceResponse.class);
 
         } catch (OAuthException e) {
             throw new AuthException(e);
