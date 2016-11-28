@@ -6,7 +6,7 @@ import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.signature.QueryStringSigningStrategy;
+import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class OAuthHelper {
 
     public String signURL(String url) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
         OAuthConsumer consumer = new DefaultOAuthConsumer(oAuthKey, oAuthSecrete);
-        consumer.setSigningStrategy( new QueryStringSigningStrategy());
+        consumer.setSigningStrategy(new AuthorizationHeaderSigningStrategy());
         String signedUrl = consumer.sign(url);
 
         try {
