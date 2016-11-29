@@ -46,13 +46,13 @@ public class OAuthHelper {
         String oauthConsumerKey = oauthParams.get(OAUTH_CONSUMER_KEY);
         String oauthSignature = oauthParams.get(OAUTH_SIGNATURE);
 
-        log.info("Auth key :" + oauthConsumerKey +" "+oAuthKey);
+        log.debug("Auth key :" + oauthConsumerKey +" "+oAuthKey);
         if(!oauthConsumerKey.equals(oAuthKey)){
             throw new AuthException("Authentication failed, unable to verify authkey");
         }
 
         String signature = HmacUtils.hmacSha1(oAuthKey, oAuthSecrete).toString();
-        log.info("Auth signature :" + oauthSignature +" "+ signature);
+        log.debug("Auth signature :" + oauthSignature +" "+ signature);
         if(!oauthSignature.equals(signature)){
             log.error("Authentication failed, unable to verify API consumer signature");
         }

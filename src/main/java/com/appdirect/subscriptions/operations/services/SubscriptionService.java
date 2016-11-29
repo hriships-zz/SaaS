@@ -54,7 +54,7 @@ public class SubscriptionService {
     public Subscription getByEventUrl(String url) throws ServiceException {
         try {
             SignedData signedData = oAuthHelper.signURL(url);
-            log.info("Signed URL : " +  signedData.getSignedUrl());
+            log.debug("Signed URL : " +  signedData.getSignedUrl());
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", signedData.getOauthHeader());
             HttpEntity<Subscription> entity = new HttpEntity<Subscription>(headers);
@@ -79,7 +79,7 @@ public class SubscriptionService {
      */
     public Subscription create(Subscription subscription) throws DataIntegrityViolationException {
         Account account = accountService.create(new Account(AccountStatusEnum.ACTIVE));
-        log.info("Created new account :" + account.getAccountIdentifier());
+        log.debug("Created new account :" + account.getAccountIdentifier());
         subscription.getPayload().setAccount(account);
         return subscriptionRepo.save(subscription);
     }
