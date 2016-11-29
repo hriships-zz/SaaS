@@ -1,0 +1,33 @@
+{
+  "type": "SUBSCRIPTION_CANCEL",
+  "marketplace": {
+    "baseUrl": "https://www.acme.com",
+    "partner": "APPDIRECT"
+  },
+  "creator": {
+    "address": {
+      "city": "Sommerville",
+      "country": "US",
+      "firstName": "Test",
+      "fullName": "Test User",
+      "lastName": "User",
+      "phone": "5305556465",
+      "state": "MA",
+      "street1": "55 Grove St",
+      "zip": "02144"
+    },
+    "email": "testuser@testco.com",
+    "firstName": "Test",
+    "language": "en",
+    "lastName": "User",
+    "locale": "en_US",
+    "openId": "https://www.acme.com/openid/id/d124bf8b-0b0b-40d3-831b-b7f5a514d487",
+    "uuid": "d124bf8b-0b0b-40d3-831b-b7f5a514d487"
+  },
+  "payload": {
+    "account": {
+      "accountIdentifier": "9d6fca98-aa94-462b-85fa-118804ad3fe3",
+      "status": "ACTIVE"
+    }
+  }
+}
