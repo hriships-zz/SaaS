@@ -43,8 +43,8 @@ public abstract class AbstractProcessor {
     /**
      * Retrieves all pending subscription notifications
      *
-     * @param type
-     * @return
+     * @param type NotificationType
+     * @return List of SubscriptionNotification
      */
     protected List<SubscriptionNotification> getSubscriptionNotifications(NotificationType type) {
         return (List<SubscriptionNotification>)
@@ -54,8 +54,8 @@ public abstract class AbstractProcessor {
     /**
      * Starts processing each subscription
      *
-     * @param eventService
-     * @param notifications
+     * @param eventService ExecutorService
+     * @param notifications List<SubscriptionNotification>
      */
     protected void processSubscriptions(ExecutorService eventService, List<SubscriptionNotification> notifications) {
         notifications.forEach(notification -> {
@@ -73,7 +73,7 @@ public abstract class AbstractProcessor {
     /**
      * Wait till threads get executes or timeout happen
      *
-     * @param eventService
+     * @param eventService ExecutorService
      */
     protected void waitForTermination(ExecutorService eventService) {
         eventService.shutdown();
@@ -92,9 +92,9 @@ public abstract class AbstractProcessor {
     /**
      * Delegated subscription process handling
      *
-     * @param notification
-     * @param eventService
-     * @param service
+     * @param notification SubscriptionNotification
+     * @param eventService ExecutorService
+     * @param service SubscriptionService
      */
     abstract void startSubscriptionProcess(SubscriptionNotification notification,
                                           ExecutorService eventService,

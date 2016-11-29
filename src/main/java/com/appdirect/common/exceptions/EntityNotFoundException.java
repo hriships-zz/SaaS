@@ -2,6 +2,7 @@ package com.appdirect.common.exceptions;
 
 /**
  * Created by hrishikesh_shinde on 11/23/2016.
+ *
  * Use for account, subscription or relevant entities that does exist in application
  */
 public class EntityNotFoundException extends RuntimeException {

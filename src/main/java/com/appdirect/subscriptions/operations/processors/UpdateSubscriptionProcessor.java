@@ -45,12 +45,14 @@ public class UpdateSubscriptionProcessor extends AbstractProcessor {
     /**
      * Submit the individual UPDATE subscription event
      *
-     * @param notification
-     * @param eventService
-     * @param service
+     * @param notification SubscriptionNotification
+     * @param eventService ExecutorService
+     * @param service SubscriptionNotification
      */
     @Override
-    void startSubscriptionProcess(SubscriptionNotification notification, ExecutorService eventService, SubscriptionService service) {
+    void startSubscriptionProcess(SubscriptionNotification notification,
+                                  ExecutorService eventService,
+                                  SubscriptionService service) {
         eventService.submit(new UpdateSubscriptionWorker(notification, notificationService, service));
     }
 }

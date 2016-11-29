@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Created by hrishikeshshinde on 23/11/16.
+ *
  * Handles controller exception aspects
  */
 
@@ -21,8 +22,9 @@ public class ExceptionHandler {
 
     /**
      * Handles authorisation exception while accessing application APIS
-     * @param ex
-     * @return
+     *
+     * @param ex Exception
+     * @return ServiceResponse entity
      */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @org.springframework.web.bind.annotation.ExceptionHandler(AuthException.class)

@@ -11,6 +11,7 @@ import java.util.Collection;
 
 /**
  * Created by hrishikeshshinde on 21/11/16.
+ *
  * Subscription notification  database repository
  */
 
@@ -19,6 +20,7 @@ public interface NotificationRepository extends JpaRepository<SubscriptionNotifi
 
     /**
      * Get all notifications by NotificationType
+     *
      * @param type NotificationType
      * @return collection of SubscriptionNotification
      */
@@ -27,9 +29,10 @@ public interface NotificationRepository extends JpaRepository<SubscriptionNotifi
 
     /**
      * Get all notifications by NotificationType and status
+     *
      * @param type NotificationType
      * @param status boolean
-     * @return
+     * @return collection of SubscriptionNotification
      */
     @Query("FROM SubscriptionNotification s where s.type = :type and s.processed = :status")
     Collection<SubscriptionNotification> findByTypeAndStatus(@Param("type") NotificationType type,

@@ -45,9 +45,9 @@ public class CreateSubscriptionProcessor extends AbstractProcessor {
     /**
      * Submit the individual CREATE subscription event
      *
-     * @param notification
-     * @param eventService
-     * @param service
+     * @param notification SubscriptionNotification
+     * @param eventService ExecutorService
+     * @param service SubscriptionService
      */
     @Override
     void startSubscriptionProcess(SubscriptionNotification notification,

@@ -45,9 +45,9 @@ public class CancelSubscriptionProcessor extends AbstractProcessor{
     /**
      * Submit the individual CANCEL subscription event
      *
-     * @param notification
-     * @param eventService
-     * @param service
+     * @param notification SubscriptionNotification
+     * @param eventService ExecutorService
+     * @param service SubscriptionService
      */
     @Override
     void startSubscriptionProcess(SubscriptionNotification notification,
@@ -55,6 +55,4 @@ public class CancelSubscriptionProcessor extends AbstractProcessor{
                                           SubscriptionService service) {
         eventService.submit(new CancelSubscriptionWorker(notification, notificationService, service));
     }
-
-
 }

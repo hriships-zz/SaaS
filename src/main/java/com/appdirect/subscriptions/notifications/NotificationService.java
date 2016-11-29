@@ -23,6 +23,7 @@ import java.util.Collection;
 
 /**
  * Created by hrishikeshshinde on 21/11/16.
+ *
  * Service to mange subscription notifications
  */
 
@@ -44,7 +45,7 @@ public class NotificationService {
      * Creates new subscription event notification
      *
      * @param notification SubscriptionNotification
-     * @return
+     * @return SubscriptionNotification
      */
     public SubscriptionNotification createNewEvent(SubscriptionNotification notification) {
         LOGGER.debug("Create subscription info : " + notification.toString());
@@ -56,7 +57,7 @@ public class NotificationService {
      *
      * @param type NotificationType
      * @param status Boolean
-     * @return
+     * @return Collections of SubscriptionNotification
      */
     public Collection<SubscriptionNotification> getEventsTypeAndStatus(NotificationType  type,
                                              Boolean status) {
@@ -66,10 +67,10 @@ public class NotificationService {
     /**
      * Post updates to AppDirect about subscriptions activities e.g. account created
      *
-     * @param url
-     * @param accountId
-     * @param errorCode
-     * @return
+     * @param url String
+     * @param accountId String
+     * @param errorCode ErrorStatusEnum
+     * @return true or false
      */
     public boolean notifyToAppDirect(String url,
                                      String accountId,
@@ -105,8 +106,8 @@ public class NotificationService {
     /**
      * Update subscription event notification
      *
-     * @param notification
-     * @return
+     * @param notification SubscriptionNotification
+     * @return SubscriptionNotification
      */
     public SubscriptionNotification update(SubscriptionNotification notification) {
         return notificationRepository.save(notification);

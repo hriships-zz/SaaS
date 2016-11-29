@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 
 /**
  * Created by hrishikeshshinde on 22/11/16.
- * OAuthHelper provides application wide Oauth 1 functions
+ *
+ * OAuthHelper provides application wide Oauth1.0 functions
  */
 
 public class OAuthHelper {
@@ -36,8 +37,9 @@ public class OAuthHelper {
     private String oAuthSecrete;
 
     /**
-     *Verifies the signature recieved from API consumer using two legged authentication mechanism
-     * @param authHeader
+     *Verifies the signature received from API consumer using two legged authentication mechanism
+     *
+     * @param authHeader String
      */
     public void authenticateSignature(String authHeader){
         Map<String, String> oauthParams = extractHeaders(authHeader);
@@ -66,9 +68,9 @@ public class OAuthHelper {
     }
 
     /**
-     * Signs the url using two legged method to perform signed fetch using oAuth 1.0
+     * Signs the url using two legged method to perform signed fetch using oAuth1.0
      *
-     * @param url
+     * @param url String
      * @return returns the signed url and authorisation header as well
      * @throws OAuthCommunicationException
      * @throws OAuthExpectationFailedException
