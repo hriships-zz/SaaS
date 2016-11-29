@@ -1,6 +1,5 @@
 package com.appdirect.subscriptions.operations.services;
 
-import com.appdirect.common.domain.ServiceResponse;
 import com.appdirect.common.domain.SignedData;
 import com.appdirect.common.exceptions.AuthException;
 import com.appdirect.common.exceptions.EntityNotFoundException;
@@ -15,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

@@ -1,17 +1,14 @@
 package com.appdirect.subscriptions.notifications;
 
+import com.appdirect.common.domain.ServiceResponse;
 import com.appdirect.common.domain.SignedData;
 import com.appdirect.common.exceptions.AuthException;
 import com.appdirect.common.services.OAuthHelper;
 import com.appdirect.subscriptions.notifications.domain.NotificationType;
-import com.appdirect.common.domain.ServiceResponse;
 import com.appdirect.subscriptions.notifications.domain.SubscriptionNotification;
 import com.appdirect.subscriptions.operations.domain.entities.ErrorStatusEnum;
 import com.appdirect.subscriptions.operations.exceptions.ServiceException;
-import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
