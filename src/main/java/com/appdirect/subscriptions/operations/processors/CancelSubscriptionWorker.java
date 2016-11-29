@@ -29,6 +29,11 @@ public class CancelSubscriptionWorker implements Runnable {
         this.subscriptionService = service;
     }
 
+    /**
+     * Once thread start executing it fetch subscription event details from AppDirect marketplace
+     * cancels subscription
+     * Deactivate the account for given subscription and updates result to AppDirect
+     */
     @Override
     public void run() {
         String url = eventNotification.getUrl();
@@ -37,7 +42,7 @@ public class CancelSubscriptionWorker implements Runnable {
         try {
             Subscription subscription = subscriptionService.getByEventUrl(url);
             subscriptionService.cancel(subscription);
-            notificationService.notifySubscription(url + "/result", null, null);
+            notificationService.notifyToAppDirect(url + "/result", null, null);
         } catch (ServiceException e) {
             LOGGER.error("Cancel subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
             eventNotification.setProcessed(false);
@@ -46,7 +51,7 @@ public class CancelSubscriptionWorker implements Runnable {
             LOGGER.error("Cancel subscription exception occurred: " + e.getMessage(), e);
         } catch (EntityNotFoundException e) {
             LOGGER.error("Cancel subscription exception occurred: " + e.getMessage(), e);
-            notificationService.notifySubscription(url + "/result", null, ErrorStatusEnum.ACCOUNT_NOT_FOUND);
+            notificationService.notifyToAppDirect(url + "/result", null, ErrorStatusEnum.ACCOUNT_NOT_FOUND);
         }
     }
 }

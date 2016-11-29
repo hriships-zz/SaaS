@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by hrishikeshshinde on 22/11/16.
+ * OAuthHelper provides application wide Oauth 1 functions
  */
 
 public class OAuthHelper {
@@ -34,6 +35,10 @@ public class OAuthHelper {
     @Value("${oAuthSecrete}")
     private String oAuthSecrete;
 
+    /**
+     *Verifies the signature recieved from API consumer using two legged authentication mechanism
+     * @param authHeader
+     */
     public void authenticateSignature(String authHeader){
         Map<String, String> oauthParams = extractHeaders(authHeader);
         String oauthConsumerKey = oauthParams.get(OAUTH_CONSUMER_KEY);
@@ -47,7 +52,7 @@ public class OAuthHelper {
         String signature = HmacUtils.hmacSha1(oAuthKey, oAuthSecrete).toString();
         log.info("Auth signature :" + oauthSignature +" "+ signature);
         if(!oauthSignature.equals(signature)){
-            //throw new AuthException("Authentication failed, unable to verify signature");
+            log.error("Authentication failed, unable to verify API consumer signature");
         }
     }
 
@@ -60,6 +65,15 @@ public class OAuthHelper {
                 .collect(Collectors.toMap(e -> e[0], e -> e[1]));
     }
 
+    /**
+     * Signs the url using two legged method to perform signed fetch using oAuth 1.0
+     *
+     * @param url
+     * @return returns the signed url and authorisation header as well
+     * @throws OAuthCommunicationException
+     * @throws OAuthExpectationFailedException
+     * @throws OAuthMessageSignerException
+     */
     public SignedData signURL(String url) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
         OAuthConsumer consumer = new DefaultOAuthConsumer(oAuthKey, oAuthSecrete);
         consumer.setSigningStrategy(new AuthorizationHeaderSigningStrategy());

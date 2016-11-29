@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by hrishikeshshinde on 21/11/16.
+ * Rest controller to handel subscription events from AppDirect
  */
 
 @RestController
@@ -27,6 +28,13 @@ public class NotificationController {
     @Autowired
     private OAuthHelper oAuthHelper;
 
+    /**
+     * Endpoint for handling create, update, cancel events
+     * @param type
+     * @param eventUrl
+     * @param authorization
+     * @return returns ServiceResponse entity
+     */
     @RequestMapping(path = "/{type}/subscriptions", method = RequestMethod.GET)
     public ResponseEntity<ServiceResponse> subscribeNotification(@PathVariable String type,
                                                                  @RequestParam(value = "eventUrl", required = true) String eventUrl,

@@ -2,6 +2,7 @@ package com.appdirect.common.domain;
 
 /**
  * Created by hrishikeshshinde on 28/11/16.
+ * This entity holds signed data like signed url and authorisation header
  */
 public class SignedData {
     private String signedUrl;

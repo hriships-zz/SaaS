@@ -2,6 +2,7 @@ package com.appdirect.subscriptions.operations.exceptions;
 
 /**
  * Created by hrishikeshshinde on 22/11/16.
+ * Exception for internal background services processing
  */
 public class ServiceException extends RuntimeException {
 

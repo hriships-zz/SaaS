@@ -28,6 +28,11 @@ public class UpdateSubscriptionProcessor extends AbstractProcessor {
     @Autowired
     private SubscriptionService subscriptionService;
 
+    /**
+     * Process all UPDATE subscriptions events, queue them and start worker thread
+     * for creating accounts and subscriptions in applications
+     * It repeats periodically for for given time interval
+     */
     @Scheduled(fixedRate = 10000)
     @Override
     void processEvents() {
@@ -37,6 +42,13 @@ public class UpdateSubscriptionProcessor extends AbstractProcessor {
         waitForTermination(eventService);
     }
 
+    /**
+     * Submit the individual UPDATE subscription event
+     *
+     * @param notification
+     * @param eventService
+     * @param service
+     */
     @Override
     void startSubscriptionProcess(SubscriptionNotification notification, ExecutorService eventService, SubscriptionService service) {
         eventService.submit(new UpdateSubscriptionWorker(notification, notificationService, service));

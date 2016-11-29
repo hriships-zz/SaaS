@@ -25,6 +25,8 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by hrishikeshshinde on 22/11/16.
+ *
+ * Manage Subscription related services
  */
 @Service
 public class SubscriptionService {
@@ -44,6 +46,13 @@ public class SubscriptionService {
     @Autowired
     private SubscriptionRepo subscriptionRepo;
 
+    /**
+     * Fetch subscription details from AppDirect upon receiving events
+     *
+     * @param url
+     * @return
+     * @throws ServiceException
+     */
     public Subscription getByEventUrl(String url) throws ServiceException {
         try {
             SignedData signedData = oAuthHelper.signURL(url);
@@ -63,12 +72,27 @@ public class SubscriptionService {
         }
     }
 
+    /**
+     * Creates new subscription
+     *
+     * @param subscription
+     * @return
+     * @throws DataIntegrityViolationException
+     */
     public Subscription create(Subscription subscription) throws DataIntegrityViolationException {
         Account account = accountService.create(new Account(AccountStatusEnum.ACTIVE));
         subscription.getPayload().setAccount(account);
         return subscriptionRepo.save(subscription);
     }
 
+    /**
+     * Updates existing subscription
+     *
+     * @param subscription
+     * @return
+     * @throws EntityNotFoundException
+     * @throws DataIntegrityViolationException
+     */
     public Subscription update(Subscription subscription) throws EntityNotFoundException, DataIntegrityViolationException {
         String accountId = subscription.getPayload().getAccount().getAccountIdentifier();
         Subscription currentSubscription;
@@ -88,6 +112,13 @@ public class SubscriptionService {
         return subscription;
     }
 
+    /**
+     * Cancels existing subscription
+     *
+     * @param subscription
+     * @return
+     * @throws EntityNotFoundException
+     */
     public Subscription cancel(Subscription subscription) throws EntityNotFoundException {
 
         String accountId = subscription.getPayload().getAccount().getAccountIdentifier();

@@ -26,6 +26,7 @@ import java.util.Collection;
 
 /**
  * Created by hrishikeshshinde on 21/11/16.
+ * Service to mange subscription notifications
  */
 
 @Service
@@ -42,19 +43,40 @@ public class NotificationService {
     @Autowired
     private OAuthHelper oAuthHelper;
 
+    /**
+     * Creates new subscription event notification
+     *
+     * @param notification SubscriptionNotification
+     * @return
+     */
     public SubscriptionNotification createNewEvent(SubscriptionNotification notification) {
         LOGGER.debug("Create subscription info : " + notification.toString());
         return notificationRepository.save(notification);
     }
 
+    /**
+     * get all subscription events by subscription type and status
+     *
+     * @param type NotificationType
+     * @param status Boolean
+     * @return
+     */
     public Collection<SubscriptionNotification> getEventsTypeAndStatus(NotificationType  type,
                                              Boolean status) {
         return notificationRepository.findByTypeAndStatus(type, status);
     }
 
-    public boolean notifySubscription(String url,
-                                      String accountId,
-                                      ErrorStatusEnum errorCode) {
+    /**
+     * Post updates to AppDirect about subscriptions activities e.g. account created
+     *
+     * @param url
+     * @param accountId
+     * @param errorCode
+     * @return
+     */
+    public boolean notifyToAppDirect(String url,
+                                     String accountId,
+                                     ErrorStatusEnum errorCode) {
         ServiceResponse serviceResponse;
 
         if(errorCode == null) {
@@ -83,6 +105,12 @@ public class NotificationService {
         return true;
     }
 
+    /**
+     * Update subscription event notification
+     *
+     * @param notification
+     * @return
+     */
     public SubscriptionNotification update(SubscriptionNotification notification) {
         return notificationRepository.save(notification);
 

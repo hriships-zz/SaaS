@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Created by hrishikeshshinde on 22/11/16.
+ * Worker thread for creating subscriptions
  */
 
 public class CreateSubscriptionWorker implements Runnable {
@@ -30,6 +31,11 @@ public class CreateSubscriptionWorker implements Runnable {
         this.subscriptionService = service;
     }
 
+    /**
+     * Once thread start executing it fetch subscription event details from AppDirect marketplace
+     * creates account and subscription
+     * updates account id for given subscription and updates result to AppDirect
+     */
     @Override
     public void run() {
         String url = eventNotification.getUrl();
@@ -39,7 +45,7 @@ public class CreateSubscriptionWorker implements Runnable {
             Subscription subscription = subscriptionService.getByEventUrl(url);
             subscriptionService.create(subscription);
             String accountIdentifier = subscription.getPayload().getAccount().getAccountIdentifier();
-            notificationService.notifySubscription(url + "/result", accountIdentifier, null);
+            notificationService.notifyToAppDirect(url + "/result", accountIdentifier, null);
         } catch (ServiceException e) {
             LOGGER.error("Create subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
             eventNotification.setProcessed(false);
@@ -47,7 +53,7 @@ public class CreateSubscriptionWorker implements Runnable {
         } catch (AuthException e) {
             LOGGER.error("Create subscription exception occurred: " + e.getMessage(), e);
         } catch (DataIntegrityViolationException e) {
-            notificationService.notifySubscription(url + "/result", null, ErrorStatusEnum.USER_ALREADY_EXISTS);
+            notificationService.notifyToAppDirect(url + "/result", null, ErrorStatusEnum.USER_ALREADY_EXISTS);
         }
     }
 }

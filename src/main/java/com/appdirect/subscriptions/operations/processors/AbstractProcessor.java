@@ -15,6 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by hrishikeshshinde on 23/11/16.
+ *
+ * AbstractProcessor has common base for all background running processors.
+ * Processors picks all pending subscriptions and process concurrently.
  */
 public abstract class AbstractProcessor {
 
@@ -26,16 +29,34 @@ public abstract class AbstractProcessor {
     @Autowired
     private SubscriptionService subscriptionService;
 
+    /**
+     * Return the ExecuterService instance with fixed number of thread pool.
+     * Thread pool size is determined by number of cores/process execution environment has
+     *
+     *  @return new ExecutorService instance
+     */
     protected ExecutorService getExecutorService() {
         int noOfProcess = Runtime.getRuntime().availableProcessors();
         return Executors.newFixedThreadPool(noOfProcess);
     }
 
+    /**
+     * Retrieves all pending subscription notifications
+     *
+     * @param type
+     * @return
+     */
     protected List<SubscriptionNotification> getSubscriptionNotifications(NotificationType type) {
         return (List<SubscriptionNotification>)
                 notificationService.getEventsTypeAndStatus(type, false);
     }
 
+    /**
+     * Starts processing each subscription
+     *
+     * @param eventService
+     * @param notifications
+     */
     protected void processSubscriptions(ExecutorService eventService, List<SubscriptionNotification> notifications) {
         notifications.forEach(notification -> {
             LOGGER.debug("Subscription Event Id : " + notification.getId());
@@ -49,6 +70,11 @@ public abstract class AbstractProcessor {
         notificationService.update(notification);
     }
 
+    /**
+     * Wait till threads get executes or timeout happen
+     *
+     * @param eventService
+     */
     protected void waitForTermination(ExecutorService eventService) {
         eventService.shutdown();
         try {
@@ -58,7 +84,18 @@ public abstract class AbstractProcessor {
         }
     }
 
+    /**
+     * Delegated the business logic to execute and process event
+     */
     abstract void processEvents();
+
+    /**
+     * Delegated subscription process handling
+     *
+     * @param notification
+     * @param eventService
+     * @param service
+     */
     abstract void startSubscriptionProcess(SubscriptionNotification notification,
                                           ExecutorService eventService,
                                           SubscriptionService service);

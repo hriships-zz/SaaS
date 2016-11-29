@@ -30,6 +30,11 @@ public class CreateSubscriptionProcessor extends AbstractProcessor {
     @Autowired
     private SubscriptionService subscriptionService;
 
+    /**
+     * Process all CREATE subscriptions events, queue them and start worker thread
+     * for creating accounts and subscriptions in applications
+     * It repeats periodically for for given time interval
+     */
     @Scheduled(fixedRate = 10000)
     @Override
     public void processEvents() {
@@ -39,6 +44,13 @@ public class CreateSubscriptionProcessor extends AbstractProcessor {
         waitForTermination(eventService);
     }
 
+    /**
+     * Submit the individual CREATE subscription event
+     *
+     * @param notification
+     * @param eventService
+     * @param service
+     */
     @Override
     void startSubscriptionProcess(SubscriptionNotification notification,
                                   ExecutorService eventService,

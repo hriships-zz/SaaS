@@ -2,6 +2,7 @@ package com.appdirect.common.exceptions;
 
 /**
  * Created by hrishikeshshinde on 23/11/16.
+ * Authentication related exceptions
  */
 public class AuthException extends RuntimeException {
 

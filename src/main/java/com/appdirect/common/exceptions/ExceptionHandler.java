@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Created by hrishikeshshinde on 23/11/16.
+ * Handles controller exception aspects
  */
 
 @ControllerAdvice
@@ -18,6 +19,11 @@ public class ExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OAuthHelper.class);
 
+    /**
+     * Handles authorisation exception while accessing application APIS
+     * @param ex
+     * @return
+     */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @org.springframework.web.bind.annotation.ExceptionHandler(AuthException.class)
     @ResponseBody

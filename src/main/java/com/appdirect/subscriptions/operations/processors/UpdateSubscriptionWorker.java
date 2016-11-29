@@ -28,6 +28,11 @@ public class UpdateSubscriptionWorker implements Runnable {
         this.subscriptionService = service;
     }
 
+    /**
+     * Once thread start executing it fetch subscription event details from AppDirect marketplace
+     * updates the subscription
+     * updates result to AppDirect
+     */
     @Override
     public void run() {
         String url = eventNotification.getUrl();
@@ -36,7 +41,7 @@ public class UpdateSubscriptionWorker implements Runnable {
         try {
             Subscription subscription = subscriptionService.getByEventUrl(url);
             subscriptionService.update(subscription);
-            notificationService.notifySubscription(url + "/result", null, null);
+            notificationService.notifyToAppDirect(url + "/result", null, null);
         } catch (ServiceException e) {
             LOGGER.error("Cancel subscription exception occurred, retrying create subscription : " + e.getMessage(), e);
             eventNotification.setProcessed(false);
@@ -45,10 +50,10 @@ public class UpdateSubscriptionWorker implements Runnable {
             LOGGER.error("Update subscription exception occurred: " + e.getMessage(), e);
         } catch (EntityNotFoundException e) {
             LOGGER.error("Update subscription exception occurred: " + e.getMessage(), e);
-            notificationService.notifySubscription(url + "/result", null, ErrorStatusEnum.ACCOUNT_NOT_FOUND);
+            notificationService.notifyToAppDirect(url + "/result", null, ErrorStatusEnum.ACCOUNT_NOT_FOUND);
         } catch (DataIntegrityViolationException e) {
             LOGGER.error("Update subscription exception occurred: " + e.getMessage(), e);
-            notificationService.notifySubscription(url + "/result", null, ErrorStatusEnum.INVALID_RESPONSE);
+            notificationService.notifyToAppDirect(url + "/result", null, ErrorStatusEnum.INVALID_RESPONSE);
         }
     }
 }

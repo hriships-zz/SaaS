@@ -14,7 +14,6 @@
     "firstName": "Test",
     "language": "en",
     "lastName": " User",
-    "locale": "en_US",
     "openId": "https://www.acme.com/openid/id/47cb8f55-1af6-5bfc-9a7d-8061d3aa0c97",
     "uuid": "47cb8f55-1af6-5bfc-9a7d-8061d3aa0c97"
   },

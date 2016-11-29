@@ -29,6 +29,12 @@ public class CancelSubscriptionProcessor extends AbstractProcessor{
     @Autowired
     private SubscriptionService subscriptionService;
 
+    /**
+     * Process all CANCEL subscriptions events, queue them and start worker thread
+     * for creating accounts and subscriptions in applications
+     * It repeats periodically for for given time interval
+     * Note: Relatively its frequency is low
+     */
     @Scheduled(fixedRate=20000)
     @Override
     public void processEvents() {
@@ -38,6 +44,13 @@ public class CancelSubscriptionProcessor extends AbstractProcessor{
         waitForTermination(eventService);
     }
 
+    /**
+     * Submit the individual CANCEL subscription event
+     *
+     * @param notification
+     * @param eventService
+     * @param service
+     */
     @Override
     void startSubscriptionProcess(SubscriptionNotification notification,
                                           ExecutorService eventService,

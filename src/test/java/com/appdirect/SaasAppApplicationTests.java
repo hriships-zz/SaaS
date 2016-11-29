@@ -1,29 +1,32 @@
 package com.appdirect;
 
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthConsumer;
+import com.appdirect.subscriptions.operations.domain.entities.AccountStatusEnum;
+import com.appdirect.subscriptions.operations.domain.entities.Subscription;
+import com.appdirect.subscriptions.operations.services.SubscriptionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.http.HttpRequest;
-import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class SaasAppApplicationTests {
+
+	@Autowired
+	SubscriptionService subscriptionService;
+
+	private Subscription subscription;
 
 	@Test
 	public void contextLoads() throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
@@ -35,7 +38,42 @@ public class SaasAppApplicationTests {
 				.map(elem -> elem.concat("\""))
 				.collect(Collectors.joining(","));
 		System.out.print("OAuth realm=\"\"," + data);
-
 	}
 
+	@Test
+	public void createSubscription() throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("create.json").getFile());
+		Subscription dummySubscription = mapper.readValue(file, Subscription.class);
+		subscription = subscriptionService.create(dummySubscription);
+
+		Assert.assertTrue(subscription.getId() != null && subscription.getPayload().getAccount().getAccountIdentifier() != null);
+	}
+
+	@Test
+	public void changeSubscription() throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("change.json").getFile());
+		Subscription dummySubscription = mapper.readValue(file, Subscription.class);
+		subscription = subscriptionService.create(dummySubscription);
+		dummySubscription.getPayload().setAccount(subscription.getPayload().getAccount());
+		dummySubscription = subscriptionService.update(dummySubscription);
+
+		Assert.assertTrue(dummySubscription.getId() != null && dummySubscription.getId().equals(subscription.getId()));
+	}
+
+	@Test
+	public void cancelSubscription() throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("cancel.json").getFile());
+		Subscription dummySubscription = mapper.readValue(file, Subscription.class);
+		subscription = subscriptionService.create(dummySubscription);
+		dummySubscription.getPayload().setAccount(subscription.getPayload().getAccount());
+		dummySubscription = subscriptionService.cancel(dummySubscription);
+
+		Assert.assertTrue(dummySubscription.getPayload().getAccount().getStatus().equals(AccountStatusEnum.INACTIVE));
+	}
 }

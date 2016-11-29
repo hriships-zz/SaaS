@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Created by hrishikeshshinde on 21/11/16.
+ * Response/Request entity to interact with APPDirect API
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServiceResponse {
