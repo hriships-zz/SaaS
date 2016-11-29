@@ -81,6 +81,7 @@ public class SubscriptionService {
      */
     public Subscription create(Subscription subscription) throws DataIntegrityViolationException {
         Account account = accountService.create(new Account(AccountStatusEnum.ACTIVE));
+        log.info("Created new account :" + account.getAccountIdentifier());
         subscription.getPayload().setAccount(account);
         return subscriptionRepo.save(subscription);
     }

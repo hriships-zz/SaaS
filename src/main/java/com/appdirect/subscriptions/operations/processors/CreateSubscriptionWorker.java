@@ -43,7 +43,9 @@ public class CreateSubscriptionWorker implements Runnable {
 
         try {
             Subscription subscription = subscriptionService.getByEventUrl(url);
-            subscriptionService.create(subscription);
+            LOGGER.info("Retrieved Subscription data " + subscription);
+            subscription = subscriptionService.create(subscription);
+            LOGGER.info("Created Subscription :" + subscription.getId());
             String accountIdentifier = subscription.getPayload().getAccount().getAccountIdentifier();
             notificationService.notifyToAppDirect(url + "/result", accountIdentifier, null);
         } catch (ServiceException e) {
