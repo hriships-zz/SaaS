@@ -46,4 +46,4 @@ Note: jar file get availabel under target directory once application built suces
 http://<host>:8080/
 ```
 This will give the link for all the resources of applciation e.g. subscriptions, account, notification events.
-Thhis application is aware of every resources it has and using HATEOS (Hyper Resource Engine)
+Thhis application is aware of every resources it has and using HATEOS (Hypermedia As The Engine Of Application State)
